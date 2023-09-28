@@ -1,0 +1,44 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    {% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static "css/login.css" %}">
+    <title>Document</title>
+</head>
+<body>
+
+    {% block header %}
+    
+    {% endblock header %}
+    
+    <header>
+        <h2 class="logo">Logo</h2>
+        <nav class="navigation">
+            <a class="int_a" href="">Accueil</a>
+            <a class="int_a" href="">Article</a>
+            <a class="int_a" href="">A propos</a>
+            <a class="int_a" href="">Contact</a>
+            <a class="int_a" href="">Profile</a>
+            {% if user.is_authenticated %}
+                <button class="btnLogout-popup"><a href="/logout">LOG OUT</a></button>
+            {% else %}
+                <button class="btnLogin-popup">LOG IN</button>
+            {% endif %}
+        </nav>
+    </header>
+
+
+    {% block login %}
+    
+    
+    {% endblock login %}
+
+
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+</body>
+</html>

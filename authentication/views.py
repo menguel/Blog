@@ -2,6 +2,7 @@ from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.utils.encoding import force_bytes, force_text
 from django.template.loader import render_to_string
 from django.contrib.sites.shortcuts import get_current_site
+from django.views import View
 
 from django.shortcuts import render
 from django.http import HttpResponse
@@ -9,7 +10,7 @@ from django.shortcuts import redirect # Pour rediriger vers des pages
 from django.contrib.auth.models import User # Classe des utilisateurs
 from django.contrib import messages # Pour les messages 
 from django.contrib.auth import authenticate, login, logout # Pour les authentifications 
-from siteblog import settings # Imprter les paramètres de Django
+from Blog import settings # Imprter les paramètres de Django
 from django.core.mail import send_mail, EmailMessage # Envoie de message 
 
 from .token import generatorToken
@@ -17,16 +18,20 @@ from .token import generatorToken
 
 
 def home(request):
-    return render(request, 'authentication/index.html')
+    return render(request, 'authentication/login.html')
+
+
+class AccountUser(View):
+    pass
 
 def register(request):
-    if request.method == "POST":
-        username = request.POST['username']
-        firstname = request.POST['firstname']
-        lastname = request.POST['lastname']
-        email = request.POST['email']
-        password = request.POST['password']
-        password1 = request.POST['password1']
+    if request.method == "POST":  # récupération des informtions postées 
+        username = request.POST['username'] # Nom d'utilisateur 
+        firstname = request.POST['firstname'] # Prenom
+        lastname = request.POST['lastname'] # Nom
+        email = request.POST['email'] # Email
+        password = request.POST['password'] # Mot de passe 
+        password1 = request.POST['password1'] # Confirmation de mot de passe
 
         if User.objects.filter(username=username):
             messages.error(request, 'Ce nom a été déjà pris')
@@ -83,20 +88,21 @@ def register(request):
 
         email.send()
         return redirect('/login')
+    print(request.user.is_authenticated)
         
-    return render(request, 'authentication/register.html')
+    return render(request, 'authentication/login.html')
 
 def logIn(request):
     if request.method == "POST":
-        username = request.POST['username']
-        password = request.POST['password']
+        username = request.POST['Lusername']
+        password = request.POST['Lpassword']
 
         user = authenticate(username=username, password=password)
         my_user = User.objects.get(username=username)
         if user is not None:
             login(request, user)
             firstname = user.first_name
-            return render(request, 'authentication/index.html', {'firstname' : firstname})
+            return render(request, 'authentication/login.html', {'firstname' : firstname})
         elif my_user.is_active == False:
             messages.error(request, "Vous n'avez pas confirmé votre adresse email !!!")
         else :
@@ -109,7 +115,7 @@ def logIn(request):
 def logOut(request):
     logout(request)
     messages.success(request, 'Vous avez été déconnecté')
-    return redirect('home')
+    return redirect('login')
 
 
 def activate(request, uidb64, token):
@@ -125,6 +131,6 @@ def activate(request, uidb64, token):
         return redirect('login')
     
     else:
-        messages.error(request, "L'activation de votre a échoué !!!")
+        messages.error(request, "L'activation de votre compte a échoué !!!")
         return redirect('home')
 
